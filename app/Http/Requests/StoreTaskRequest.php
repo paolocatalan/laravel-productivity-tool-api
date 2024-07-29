@@ -22,9 +22,14 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'max:255'],
-            'description' => ['required'],
-            'priority' => ['required']
+            'name' => [$this->isPostRequest(), 'max:255'],
+            'description' => [$this->isPostRequest()],
+            'priority' => [$this->isPostRequest()]
         ];
+    }
+
+    private function isPostRequest()
+    {
+        return request()->isMethod('post') ? 'required' : 'sometimes';
     }
 }

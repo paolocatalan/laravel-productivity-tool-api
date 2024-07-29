@@ -54,15 +54,13 @@ class TasksController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task)
+    public function update(StoreTaskRequest $request, Task $task)
     {
         if (Gate::denies('updateTask', $task)) {
             return $this->error('', 'You are not authorized to make this request.', 403);
         }
 
-        $task->update($request->only(
-            'name', 'description', 'priority'
-        ));
+        $task->update($request->validated());
 
         return new TaskResource($task);
 

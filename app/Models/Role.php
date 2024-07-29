@@ -9,9 +9,9 @@ class Role extends Model
 {
     use HasFactory;
 
-    const ROLE_ADMIN = 'administrator';
-    const ROLE_MANAGER = 'task-owner';
-    const ROLE_USER = 'user';
+    const ROLE_ADMIN = 'Administrator';
+    const ROLE_MANAGER = 'Manager';
+    const ROLE_USER = 'User';
 
     protected $fillable = [
         'name',

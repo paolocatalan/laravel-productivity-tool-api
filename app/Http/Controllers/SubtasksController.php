@@ -56,13 +56,13 @@ class SubtasksController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task, Subtask $subtask)
+    public function update(StoreTaskRequest $request, Task $task, Subtask $subtask)
     {
         if (Gate::denies('updateSubtask', $subtask)) {
             return $this->error('', 'You are not authorized to make this request.', 403);
         }
 
-        $subtask->update($request->all());
+        $subtask->update($request->validated());
 
         return new SubtaskResource($subtask);
     }

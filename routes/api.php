@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\UserRolesEnums;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubtasksController;
 use App\Http\Controllers\TasksController;
@@ -8,7 +7,6 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Gate;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -31,7 +29,6 @@ Route::prefix('v2')->group(function () {
     Route::get('/tasks/{task}', function(Task $task) {
         return new TaskResource($task);
     });
-
 
 });
 

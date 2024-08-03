@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaskStagesEnums;
-use App\Models\Task;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Http\FormRequest;
@@ -31,10 +30,18 @@ class StoreTaskRequest extends FormRequest
             'due_date' =>  [$this->isPostRequest(), 'date', 'date_format:Y-m-d H:s:i', 'after:now'],
             'priority' => [$this->isPostRequest()],
             'stage' => [$this->isPostRequest(), Rule::in(
-                TaskStagesEnums::NOT_STARTED->value,
-                TaskStagesEnums::IN_PROGRESS->value,
-                TaskStagesEnums::COMPLETED->value
-            )]
+                    TaskStagesEnums::NOT_STARTED->value,
+                    TaskStagesEnums::IN_PROGRESS->value,
+                    TaskStagesEnums::COMPLETED->value
+                )]
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'due_date' => 'Please ensure the date is beyond today\'s date to proceed.',
+            'stage' => 'Please select an option from the dropdown list.'
         ];
     }
 

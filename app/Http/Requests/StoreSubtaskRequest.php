@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
@@ -25,9 +24,20 @@ class StoreSubtaskRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'assignee' => [
+                $this->isPostRequest(),
+                Rule::exists('users', 'name')->where('role', 'User'),
+            ],
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
             'priority' => [$this->isPostRequest()]
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'assignee' => 'Please ensure the name matches a current team member.'
         ];
     }
 

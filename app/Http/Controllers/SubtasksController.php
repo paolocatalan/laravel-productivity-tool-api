@@ -6,9 +6,9 @@ use App\Http\Requests\StoreSubtaskRequest;
 use App\Http\Resources\SubtaskResource;
 use App\Models\Subtask;
 use App\Models\Task;
+use App\Models\User;
 use App\Traits\HttpResponses;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Auth;
 
 class SubtasksController extends Controller
 {
@@ -40,7 +40,7 @@ class SubtasksController extends Controller
 
         $subtask = Subtask::create([
             'task_id' => $task->id,
-            'user_id' => Auth::id(),
+            'user_id' => $this->getUserId($request->assignee),
             'name' => $request->name,
             'description' => $request->description,
             'priority' => $request->priority
@@ -93,7 +93,7 @@ class SubtasksController extends Controller
         return $this->success('', 'Task has been deleted from the database.', 200);
     }
 
-    public function isNotFound($taskId, $subtaskId): bool
+    private function isNotFound($taskId, $subtaskId): bool
     {
         $subtask = Subtask::where('task_id', $taskId)->where('id', $subtaskId)->get();
 
@@ -102,6 +102,13 @@ class SubtasksController extends Controller
         }
 
         return false;
+    }
+
+    private function getUserId($name)
+    {
+        $userId = User::where('name', $name)->first()->id;
+
+        return $userId;
     }
 
 }

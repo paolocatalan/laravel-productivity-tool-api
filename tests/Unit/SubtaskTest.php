@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Models\Subtask;
 use App\Models\Task;
 use App\Models\User;
-use Database\Seeders\TaskSeeder;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -48,14 +47,17 @@ class SubtaskTest extends TestCase
 
     public function test_subtask_store(): void
     {
-        $user = User::factory()->state(['role' => 'User'])->create();
+        $user = User::factory()->state(['name' => 'Jim Keller', 'role' => 'User'])->create();
         $task = Task::factory()->for($user)->create();
 
         $response = $this->actingAs($user)->postJson('/api/tasks/' . $task->id . '/subtasks', [
+            'assignee' => 'Jim Keller',
             'name' => 'Automated Testing',
             'description' => 'Test the API at every level and to make sure it is prepared to be used by its end customers.',
             'priority' => 'normal'
         ]);
+
+        $response->assertStatus(403);
 
         $response->assertJson(fn (AssertableJson $json) =>
             $json->hasAll(['message', 'error'])

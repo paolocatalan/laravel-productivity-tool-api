@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-// use App\Http\Controllers\v1\ProjectController;
+use App\Http\Controllers\v1\ProjectController;
 use App\Http\Controllers\v1\TasksController;
 use App\Http\Controllers\v1\SubtasksController;
 use Illuminate\Support\Facades\Route;
@@ -15,7 +15,7 @@ Route::middleware(['auth:sanctum', 'last_active_at'])->group(function () {
         return $request->user();
     });
     Route::post('/logout', [AuthController::class, 'logout']);
-    // Route::apiResource('projects', ProjectController::class);
+    Route::apiResource('projects', ProjectController::class);
     Route::apiResource('tasks', TasksController::class);
     Route::apiResource('tasks.subtasks', SubtasksController::class);
 });

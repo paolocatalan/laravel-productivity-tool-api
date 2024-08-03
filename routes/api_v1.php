@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [AuthController::class, 'store']);
+
+Route::apiResource('projects', ProjectController::class);
 
 Route::middleware(['auth:sanctum', 'last_active_at'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::apiResource('projects', ProjectController::class);
     Route::apiResource('tasks', TasksController::class);
     Route::apiResource('tasks.subtasks', SubtasksController::class);
 });

@@ -21,7 +21,9 @@ class TaskFactory extends Factory
             'user_id' => User::all()->random()->id,
             'name' => $this->faker->unique()->sentence(),
             'description' => $this->faker->text(),
-            'priority' => $this->faker->randomElement(['low', 'normal', 'high'])
+            'due_date' => $this->faker->dateTimeBetween('+1 days', '+30 days'),
+            'priority' => $this->faker->randomElement(['Low', 'Normal', 'High']),
+            'stage' => $this->faker->randomElement(['Not started', 'In progress', 'Completed'])
         ];
     }
 }

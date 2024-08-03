@@ -28,15 +28,13 @@ class TasksController extends Controller
      */
     public function store(StoreTaskRequest $request, Task $task)
     {
-        if (Gate::denies('createTask', $task)) {
-            return $this->error('', 'You are not authorized to make this request.', 403);
-        }
-
         $task = Task::create([
             'user_id' => Auth::id(),
             'name' => $request->name,
             'description' => $request->description,
-            'priority' => $request->priority
+            'due_date' => $request->due_date,
+            'priority' => $request->priority,
+            'stage' => $request->stage
         ]);
 
         return new TaskResource($task);
@@ -55,10 +53,6 @@ class TasksController extends Controller
      */
     public function update(StoreTaskRequest $request, Task $task)
     {
-        if (Gate::denies('updateTask', $task)) {
-            return $this->error('', 'You are not authorized to make this request.', 403);
-        }
-
         $task->update($request->validated());
 
         return new TaskResource($task);

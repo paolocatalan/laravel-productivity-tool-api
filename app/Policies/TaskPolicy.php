@@ -9,14 +9,9 @@ use App\Models\User;
 
 class TaskPolicy
 {
-    public function createTask(User $user) : bool
+    public function manageTask(User $user) : bool
     {
         return $user->role === Role::ROLE_MANAGER;
-    }
-
-    public function updateTask(User $user, Task $task): bool
-    {
-        return $user->id === $task->user_id || $user->role === Role::ROLE_MANAGER;
     }
 
     public function deleteTask(User $user) : bool

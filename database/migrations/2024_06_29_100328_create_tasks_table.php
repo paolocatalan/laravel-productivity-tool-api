@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TaskStagesEnums;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,14 +14,17 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('description');
+            $table->dateTime('due_date')->nullable();
             $table->string('priority')->default('normal');
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
+            $table->enum('stage', [
+                    TaskStagesEnums::NOT_STARTED->value,
+                    TaskStagesEnums::IN_PROGRESS->value,
+                    TaskStagesEnums::COMPLETED->value,
+                ]
+            )->default(TaskStagesEnums::NOT_STARTED->value);
             $table->timestamps();
         });
     }

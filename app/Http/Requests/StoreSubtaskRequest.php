@@ -2,19 +2,16 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\TaskStagesEnums;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTaskRequest extends FormRequest
+class StoreSubtaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return Gate::authorize('manageTask', $this->task);
+        return true;
     }
 
     /**
@@ -27,13 +24,7 @@ class StoreTaskRequest extends FormRequest
         return [
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
-            'due_date' =>  [$this->isPostRequest(), 'date', 'date_format:Y-m-d H:s:i', 'after:now'],
-            'priority' => [$this->isPostRequest()],
-            'stage' => [$this->isPostRequest(), Rule::in(
-                TaskStagesEnums::NOT_STARTED->value,
-                TaskStagesEnums::IN_PROGRESS->value,
-                TaskStagesEnums::COMPLETED->value
-            )]
+            'priority' => [$this->isPostRequest()]
         ];
     }
 

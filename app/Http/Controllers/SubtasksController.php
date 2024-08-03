@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\StoreSubtaskRequest;
 use App\Http\Resources\SubtaskResource;
 use App\Models\Subtask;
 use App\Models\Task;
@@ -27,7 +27,7 @@ class SubtasksController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request, Task $task, Subtask $subtask)
+    public function store(StoreSubtaskRequest $request, Task $task, Subtask $subtask)
     {
         if (Gate::denies('createSubtask', $subtask)) {
             return $this->error('', 'You are not authorized to make this request.', 403);
@@ -55,7 +55,7 @@ class SubtasksController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreTaskRequest $request, Task $task, Subtask $subtask)
+    public function update(StoreSubtaskRequest $request, Task $task, Subtask $subtask)
     {
         if (Gate::denies('updateSubtask', $subtask)) {
             return $this->error('', 'You are not authorized to make this request.', 403);

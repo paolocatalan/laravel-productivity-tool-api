@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaskStagesEnums;
+use App\Models\Task;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Http\FormRequest;
@@ -12,9 +13,9 @@ class StoreTaskRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return Gate::authorize('manageTask', $this->task);
+        return true;
     }
 
     /**

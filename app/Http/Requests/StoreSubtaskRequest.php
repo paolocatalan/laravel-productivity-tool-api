@@ -12,9 +12,9 @@ class StoreSubtaskRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return Gate::authorize('updateSubtask', $this->subtask);
+        return true;
     }
 
     /**

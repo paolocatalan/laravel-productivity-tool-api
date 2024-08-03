@@ -29,6 +29,8 @@ class SubtasksController extends Controller
      */
     public function store(StoreSubtaskRequest $request, Task $task, Subtask $subtask)
     {
+        Gate::authorize('updateSubtask', $subtask);
+
         $data = Subtask::where('task_id', $task->id)->get();
         if ($data->isEmpty()) {
             abort(404);
@@ -67,6 +69,8 @@ class SubtasksController extends Controller
         if ($this->isNotFound($task->id, $subtask->id)) {
             abort(404);
         }
+
+        Gate::authorize('updateSubtask', $subtask);
 
         $subtask->update($request->validated());
 

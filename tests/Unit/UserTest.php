@@ -26,7 +26,7 @@ class UserTest extends TestCase
 
         $response
             ->assertJsonStructure([
-                'status',
+                'success',
                 'message',
                 'data' => [
                     'user',

@@ -23,7 +23,9 @@ class TaskTest extends TestCase
         $this->actingAs($user)->postJson('/api/tasks', [
             'name' => 'Automated Testing',
             'description' => 'Test the API at every level and to make sure it is prepared to be used by its end customers.',
-            'priority' => 'medium'
+            'due_date' => '2024-08-11 11:00:11',
+            'priority' => 'medium',
+            'stage' => 'Not started'
         ]);
 
         $response = $this->get('/api/tasks');
@@ -41,11 +43,15 @@ class TaskTest extends TestCase
     {
         $user = User::factory()->state(['role' => 'Manager'])->create();
 
-        $this->actingAs($user)->postJson('/api/tasks', [
-            'name' => 'Automated Testing',
-            'description' => 'Test the API at every level and to make sure it is prepared to be used by its end customers.',
-            'priority' => 'medium'
-        ]);
+        $this->actingAs($user)->postJson('/api/tasks',
+            [
+                'name' => 'Automated Testing',
+                'description' => 'Test the API at every level and to make sure it is prepared to be used by its end customers.',
+                'due_date' => '2024-08-11 11:00:11',
+                'priority' => 'medium',
+                'stage' => 'Not started'
+            ]
+        );
 
         $this->assertDatabaseHas('tasks', [
             'name' => 'Automated Testing'
@@ -59,7 +65,7 @@ class TaskTest extends TestCase
         $user = User::factory()->state(['id' => 1])->create();
         $task = Task::factory()->for(User::factory()->state(['id' => 2]))->create();
 
-        $response = $this->actingAs($user)->patch('/api/tasks/' . $task->id, [
+        $response = $this->actingAs($user)->patchJson('/api/tasks/' . $task->id, [
             'priority' => 'low'
         ]);
 

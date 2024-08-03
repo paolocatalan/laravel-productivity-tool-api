@@ -28,6 +28,8 @@ class TasksController extends Controller
      */
     public function store(StoreTaskRequest $request, Task $task)
     {
+        Gate::authorize('manageTask', $task);
+
         $task = Task::create([
             'user_id' => Auth::id(),
             'name' => $request->name,
@@ -53,6 +55,8 @@ class TasksController extends Controller
      */
     public function update(StoreTaskRequest $request, Task $task)
     {
+        Gate::authorize('manageTask', $task);
+
         $task->update($request->validated());
 
         return new TaskResource($task);

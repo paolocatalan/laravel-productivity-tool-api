@@ -11,10 +11,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
-        health: '/up',
         then: function () {
             Route::middleware('api')
                 ->prefix('api/v1')
@@ -29,27 +27,21 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'error' => 'AuthenticationException',
-                    'message' => 'Request was not successful because it lacks valid authentication credentials for the requested resource.'
-                ], 401);
-            }
+            return response()->json([
+                'error' => 'Unauthorized.',
+                'message' => 'Request was not successful because it lacks valid authentication credentials for the requested resource.'
+            ], 401);
         })
         ->render(function (AccessDeniedHttpException $e, Request $request) {
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'error' => 'AccessDeniedHttpException',
-                    'message' => 'You are not authorized to make this request.'
-                ], 403);
-            }
+            return response()->json([
+                'error' => 'Forbidden.',
+                'message' => 'You are not authorized to make this request.'
+            ], 403);
         })
         ->render(function (NotFoundHttpException $e, Request $request) {
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'error' => 'NotFoundHttpException',
-                    'message' => 'Server cannot find the requested resource.'
-                ], 404);
-            }
+            return response()->json([
+                'error' => 'Not Found.',
+                'message' => 'Server cannot find the requested resource.'
+            ], 404);
         });
     })->create();

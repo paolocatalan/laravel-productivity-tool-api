@@ -28,19 +28,19 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             return response()->json([
-                'error' => 'Unauthorized.',
+                'error' => 'Error has occured.',
                 'message' => 'Request was not successful because it lacks valid authentication credentials for the requested resource.'
             ], 401);
         })
         ->render(function (AccessDeniedHttpException $e, Request $request) {
             return response()->json([
-                'error' => 'Forbidden.',
+                'error' => 'Error has occured.',
                 'message' => 'You are not authorized to make this request.'
             ], 403);
         })
         ->render(function (NotFoundHttpException $e, Request $request) {
             return response()->json([
-                'error' => 'Not Found.',
+                'error' => 'Error has occured.',
                 'message' => 'Server cannot find the requested resource.'
             ], 404);
         });

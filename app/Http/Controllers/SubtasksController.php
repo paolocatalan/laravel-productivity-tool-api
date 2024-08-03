@@ -29,9 +29,12 @@ class SubtasksController extends Controller
      */
     public function store(StoreSubtaskRequest $request, Task $task, Subtask $subtask)
     {
-        if (Gate::denies('createSubtask', $subtask)) {
-            return $this->error('', 'You are not authorized to make this request.', 403);
+        $data = Subtask::where('task_id', $task->id)->get();
+        if ($data->isEmpty()) {
+            abort(404);
         }
+
+        Gate::authorize('createSubtask', $subtask);
 
         $subtask = Subtask::create([
             'task_id' => $task->id,
@@ -49,6 +52,10 @@ class SubtasksController extends Controller
      */
     public function show(Task $task, Subtask $subtask)
     {
+        if ($this->isNotFound($task->id, $subtask->id)) {
+            abort(404);
+        }
+
         return new SubtaskResource($subtask);
     }
 
@@ -57,8 +64,8 @@ class SubtasksController extends Controller
      */
     public function update(StoreSubtaskRequest $request, Task $task, Subtask $subtask)
     {
-        if (Gate::denies('updateSubtask', $subtask)) {
-            return $this->error('', 'You are not authorized to make this request.', 403);
+        if ($this->isNotFound($task->id, $subtask->id)) {
+            abort(404);
         }
 
         $subtask->update($request->validated());
@@ -71,11 +78,26 @@ class SubtasksController extends Controller
      */
     public function destroy(Task $task, Subtask $subtask)
     {
+        if ($this->isNotFound($task->id, $subtask->id)) {
+            abort(404);
+        }
+
         Gate::authorize('deleteSubtask', $subtask);
 
         $subtask->delete();
 
         return $this->success('', 'Task has been deleted from the database.', 200);
+    }
+
+    public function isNotFound($taskId, $subtaskId): bool
+    {
+        $subtask = Subtask::where('task_id', $taskId)->where('id', $subtaskId)->get();
+
+        if ($subtask->isEmpty()) {
+            return true;
+        }
+
+        return false;
     }
 
 }

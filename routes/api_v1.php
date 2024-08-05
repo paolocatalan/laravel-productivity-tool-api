@@ -21,7 +21,3 @@ Route::middleware(['auth:sanctum', 'last_active_at'])->group(function () {
     Route::apiResource('tasks', TasksController::class);
     Route::apiResource('tasks.subtasks', SubtasksController::class);
 });
-
-Route::get('/test', function() {
-    return array_column(TaskStagesEnums::cases(), 'value');
-});

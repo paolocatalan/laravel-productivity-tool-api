@@ -27,8 +27,6 @@ class TasksController extends Controller
      */
     public function store(StoreTaskRequest $request, Task $task)
     {
-        Gate::authorize('manageTask', $task);
-
         $task = Task::create($request->validated());
 
         return new TaskResource($task);
@@ -47,8 +45,6 @@ class TasksController extends Controller
      */
     public function update(StoreTaskRequest $request, Task $task)
     {
-        Gate::authorize('manageTask', $task);
-
         $task->update($request->validated());
 
         return new TaskResource($task);

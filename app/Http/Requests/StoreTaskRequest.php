@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaskStagesEnums;
+use App\Models\Task;
 use App\Models\v1\Project;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
@@ -14,16 +15,9 @@ class StoreTaskRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        return true;
-    }
-
-    // look into passedValidation with merge method
-    protected function prepareForValidation(): void
-    {
-        $projecId = (request()->isMethod('post')) ? $this->getProjectId($this->project) : $this->task->project->id;
-        $this->merge(['user_id' => Auth::id(), 'project_id' => $projecId]);
+        return Gate::allows('manageTask', Task::class);
     }
 
     /**
@@ -34,8 +28,6 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required'],
-            'project_id' => ['required'],
             'project' => [$this->isPostRequest(), Rule::exists('projects', 'title')],
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
@@ -52,6 +44,16 @@ class StoreTaskRequest extends FormRequest
             'stage' => 'Please select an option from the dropdown list.'
         ];
     }
+
+    public function validated($key = null, $default = null)
+    {
+        if (request()->isMethod('post')) {
+            return array_merge(parent::validated(), ['user_id' => Auth::id(), 'project_id' => $this->getProjectId($this->project)]);
+        }
+
+        return parent::validated();
+    }
+
 
     private function getProjectId($title): int
     {

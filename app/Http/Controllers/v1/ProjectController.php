@@ -6,13 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\StoreProjectRequest;
 use App\Http\Resources\v1\ProjectResource;
 use App\Models\v1\Project;
+use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller implements HasMiddleware
 {
+    use HttpResponses;
+
     public static function middleware(): array
     {
         return [
@@ -66,10 +68,6 @@ class ProjectController extends Controller implements HasMiddleware
     {
         $project->delete();
 
-        return response()->json([
-            'success' => 'Request was successful.',
-            'message' => 'Project has been deleted from the database.',
-            200
-        ]);
+        return $this->success('', 'Task has been deleted from the database.', 200);
     }
 }

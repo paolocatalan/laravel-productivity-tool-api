@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Subtask;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class StoreSubtaskRequest extends FormRequest
@@ -13,16 +13,11 @@ class StoreSubtaskRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        return true;
-    }
+        $subtaskPolicy = (request()->isMethod('post')) ? 'createSubtask' : 'updateSubask';
 
-    // look into passedValidation with merge method
-    protected function prepareForValidation(): void
-    {
-        $userId = (request()->isMethod('post')) ? $this->getUserId($this->assignee) : $this->task->user->id;
-        $this->merge(['task_id' => $this->task->id, 'user_id' => $userId]);
+        return Gate::allows($subtaskPolicy, Subtask::class);
     }
 
     /**
@@ -33,12 +28,7 @@ class StoreSubtaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'task_id' => ['required'],
-            'user_id' => ['required'],
-            'assignee' => [
-                $this->isPostRequest(),
-                Rule::exists('users', 'name')->where('role', 'User'),
-            ],
+            'assignee' => [$this->isPostRequest(), Rule::exists('users', 'name')->where('role', 'User')],
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
             'priority' => [$this->isPostRequest()]
@@ -50,6 +40,15 @@ class StoreSubtaskRequest extends FormRequest
         return [
             'assignee' => 'Please ensure the name matches a current team member.'
         ];
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        if (request()->isMethod('post')) {
+            return array_merge(parent::validated(), ['task_id' => $this->task->id, 'user_id' => $this->getUserId($this->assignee)]);
+        }
+
+        return parent::validated();
     }
 
     private function getUserId($name): int

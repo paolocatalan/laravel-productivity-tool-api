@@ -20,11 +20,7 @@ return new class extends Migration
             $table->string('description');
             $table->dateTime('due_date')->nullable();
             $table->string('priority')->default('normal');
-            $table->enum('stage', [
-                    TaskStagesEnums::NOT_STARTED->value,
-                    TaskStagesEnums::IN_PROGRESS->value,
-                    TaskStagesEnums::COMPLETED->value,
-                ]
+            $table->enum('stage', [array_column(TaskStagesEnums::cases(), 'value')]
             )->default(TaskStagesEnums::NOT_STARTED->value);
             $table->timestamps();
         });

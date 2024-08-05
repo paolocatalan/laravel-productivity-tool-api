@@ -26,7 +26,7 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'role' => UserRolesEnums::USER->value,
+            'role' => fake()->randomElement(array_column(UserRolesEnums::cases(), 'value')),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),

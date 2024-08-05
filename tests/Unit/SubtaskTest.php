@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Subtask;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\v1\Project;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -18,10 +19,10 @@ class SubtaskTest extends TestCase
      */
     public function test_subtask_index(): void
     {
-        $user = User::factory()->state(['id' => 1, 'role' => 'User'])->create(); 
-        $task = Task::factory()->state(['id' => 1])->has(Subtask::factory())->create();
+        $this->seed();
+        $user = User::factory()->state(['role' => 'User'])->create();
 
-        $response = $this->actingAs($user)->getJson('/api/tasks/' . $task->id . '/subtasks');
+        $response = $this->actingAs($user)->getJson('/api/tasks/1/subtasks');
 
         $response
             ->assertJsonStructure([
@@ -47,10 +48,10 @@ class SubtaskTest extends TestCase
 
     public function test_subtask_store(): void
     {
+        $this->seed();
         $user = User::factory()->state(['name' => 'Jim Keller', 'role' => 'User'])->create();
-        $task = Task::factory()->for($user)->create();
 
-        $response = $this->actingAs($user)->postJson('/api/tasks/' . $task->id . '/subtasks', [
+        $response = $this->actingAs($user)->postJson('/api/tasks/1/subtasks', [
             'assignee' => 'Jim Keller',
             'name' => 'Automated Testing',
             'description' => 'Test the API at every level and to make sure it is prepared to be used by its end customers.',
@@ -66,10 +67,11 @@ class SubtaskTest extends TestCase
 
     public function test_subtask_update(): void
     {
-        $user = User::factory()->state(['id' => 1, 'role' => 'User'])->create();
-        $task = Task::factory()->has(Subtask::factory()->state(['id' => 1, 'user_id' => 1]))->create();
+        $this->seed();
+        $user = User::factory()->state(['id' => 99, 'role' => 'User'])->create();
+        $task = Task::factory()->has(Subtask::factory()->state(['id' => 99, 'user_id' => 99]))->create();
 
-        $response = $this->actingAs($user)->patchJson('/api/tasks/' . $task->id . '/subtasks/1', [
+        $response = $this->actingAs($user)->patchJson('/api/tasks/' . $task->id . '/subtasks/99', [
             'priority' => 'low'
         ]);
 

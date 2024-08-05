@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\TaskPriorityEnums;
+use App\Enums\TaskStagesEnums;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 use App\Models\v1\Project;
@@ -24,8 +26,8 @@ class TaskFactory extends Factory
             'name' => $this->faker->unique()->sentence(),
             'description' => $this->faker->text(),
             'due_date' => $this->faker->dateTimeBetween('+1 days', '+30 days'),
-            'priority' => $this->faker->randomElement(['low', 'normal', 'high']),
-            'stage' => $this->faker->randomElement(['Not started', 'In progress', 'Completed'])
+            'priority' => $this->faker->randomElement(array_column(TaskPriorityEnums::cases(), 'value')),
+            'stage' => $this->faker->randomElement(array_column(TaskStagesEnums::cases(), 'value'))
         ];
     }
 }

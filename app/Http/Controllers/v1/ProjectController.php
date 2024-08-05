@@ -7,9 +7,9 @@ use App\Http\Requests\v1\StoreProjectRequest;
 use App\Http\Resources\v1\ProjectResource;
 use App\Models\v1\Project;
 use App\Traits\HttpResponses;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller implements HasMiddleware
 {
@@ -66,6 +66,8 @@ class ProjectController extends Controller implements HasMiddleware
      */
     public function destroy(Project $project)
     {
+        Gate::authorize('deleteProject', $project);
+
         $project->delete();
 
         return $this->success('', 'Task has been deleted from the database.', 200);

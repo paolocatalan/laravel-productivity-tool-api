@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TaskPriorityEnums;
 use App\Enums\TaskStagesEnums;
 use App\Models\Task;
 use App\Models\v1\Project;
@@ -32,7 +33,7 @@ class StoreTaskRequest extends FormRequest
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
             'due_date' =>  [$this->isPostRequest(), 'date', 'date_format:Y-m-d H:s:i', 'after:now'],
-            'priority' => [$this->isPostRequest()],
+            'priority' => [$this->isPostRequest(), Rule::in(array_column(TaskPriorityEnums::cases(), 'value'))],
             'stage' => [$this->isPostRequest(), Rule::in(array_column(TaskStagesEnums::cases(), 'value'))]
         ];
     }
@@ -41,6 +42,7 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'due_date' => 'Please ensure the date is beyond today\'s date to proceed.',
+            'priority' => 'Please select an option from the dropdown list.',
             'stage' => 'Please select an option from the dropdown list.'
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TaskPriorityEnums;
 use App\Models\Subtask;
 use App\Models\User;
 use Illuminate\Validation\Rule;
@@ -31,14 +32,15 @@ class StoreSubtaskRequest extends FormRequest
             'assignee' => [$this->isPostRequest(), Rule::exists('users', 'name')->where('role', 'User')],
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
-            'priority' => [$this->isPostRequest()]
+            'priority' => [$this->isPostRequest(), Rule::in(array_column(TaskPriorityEnums::cases(), 'value'))]
         ];
     }
 
     public function messages(): array
     {
         return [
-            'assignee' => 'Please ensure the name matches a current team member.'
+            'assignee' => 'Please ensure the name matches a current team member.',
+            'priority' => 'Please select an option from the dropdown list.'
         ];
     }
 

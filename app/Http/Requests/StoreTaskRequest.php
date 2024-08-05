@@ -14,9 +14,9 @@ class StoreTaskRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return Gate::authorize('manageTask', $this->task);
+        return true;
     }
 
     // look into passedValidation with merge method
@@ -36,19 +36,12 @@ class StoreTaskRequest extends FormRequest
         return [
             'user_id' => ['required'],
             'project_id' => ['required'],
-            'project' => [
-                $this->isPostRequest(),
-                Rule::exists('projects', 'title'),
-            ],
+            'project' => [$this->isPostRequest(), Rule::exists('projects', 'title')],
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
             'due_date' =>  [$this->isPostRequest(), 'date', 'date_format:Y-m-d H:s:i', 'after:now'],
             'priority' => [$this->isPostRequest()],
-            'stage' => [$this->isPostRequest(), Rule::in(
-                    TaskStagesEnums::NOT_STARTED->value,
-                    TaskStagesEnums::IN_PROGRESS->value,
-                    TaskStagesEnums::COMPLETED->value
-                )]
+            'stage' => [$this->isPostRequest(), Rule::in(array_column(TaskStagesEnums::cases(), 'value'))]
         ];
     }
 

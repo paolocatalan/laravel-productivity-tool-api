@@ -27,11 +27,7 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'max:255', 'unique:users', 'email:strict,rfc,dns'],
-            'role' => ['required', Rule::in(
-                UserRolesEnums::ADMIN->value,
-                UserRolesEnums::MANAGER->value,
-                UserRolesEnums::USER->value,
-            )],
+            'role' => ['required', Rule::in(array_column(UserRolesEnums::cases(), 'value'))],
             'password' => ['required', 'confirmed', Password::defaults()]
         ];
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TaskStagesEnums;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\v1\ProjectController;
 use App\Http\Controllers\TasksController;
@@ -19,4 +20,8 @@ Route::middleware(['auth:sanctum', 'last_active_at'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('tasks', TasksController::class);
     Route::apiResource('tasks.subtasks', SubtasksController::class);
+});
+
+Route::get('/test', function() {
+    return array_column(TaskStagesEnums::cases(), 'value');
 });

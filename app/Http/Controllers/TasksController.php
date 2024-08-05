@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
-use App\Models\v1\Project;
 use App\Traits\HttpResponses;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Auth;
 
 class TasksController extends Controller
 {
@@ -29,6 +27,8 @@ class TasksController extends Controller
      */
     public function store(StoreTaskRequest $request, Task $task)
     {
+        Gate::authorize('manageTask', $task);
+
         $task = Task::create($request->validated());
 
         return new TaskResource($task);
@@ -47,6 +47,8 @@ class TasksController extends Controller
      */
     public function update(StoreTaskRequest $request, Task $task)
     {
+        Gate::authorize('manageTask', $task);
+
         $task->update($request->validated());
 
         return new TaskResource($task);

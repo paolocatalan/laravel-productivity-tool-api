@@ -3,18 +3,27 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaskStagesEnums;
+use App\Models\v1\Project;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreTaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        return true;
+        return Gate::authorize('manageTask', $this->task);
+    }
+
+    // look into passedValidation with merge method
+    protected function prepareForValidation(): void
+    {
+        $projecId = (request()->isMethod('post')) ? $this->getProjectId($this->project) : $this->task->project->id;
+        $this->merge(['user_id' => Auth::id(), 'project_id' => $projecId]);
     }
 
     /**
@@ -25,9 +34,11 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => ['required'],
+            'project_id' => ['required'],
             'project' => [
                 $this->isPostRequest(),
-                Rule::exists('project', 'title'),
+                Rule::exists('projects', 'title'),
             ],
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
@@ -47,6 +58,13 @@ class StoreTaskRequest extends FormRequest
             'due_date' => 'Please ensure the date is beyond today\'s date to proceed.',
             'stage' => 'Please select an option from the dropdown list.'
         ];
+    }
+
+    private function getProjectId($title): int
+    {
+        $id = Project::where('title', $title)->first()->id;
+        
+        return $id;
     }
 
     private function isPostRequest()

@@ -6,7 +6,6 @@ use App\Http\Requests\StoreSubtaskRequest;
 use App\Http\Resources\SubtaskResource;
 use App\Models\Subtask;
 use App\Models\Task;
-use App\Models\User;
 use App\Traits\HttpResponses;
 use Illuminate\Support\Facades\Gate;
 
@@ -29,8 +28,6 @@ class SubtasksController extends Controller
      */
     public function store(StoreSubtaskRequest $request, Task $task, Subtask $subtask)
     {
-        Gate::authorize('updateSubtask', $subtask);
-
         $data = Subtask::where('task_id', $task->id)->get();
         if ($data->isEmpty()) {
             abort(404);
@@ -38,13 +35,7 @@ class SubtasksController extends Controller
 
         Gate::authorize('createSubtask', $subtask);
 
-        $subtask = Subtask::create([
-            'task_id' => $task->id,
-            'user_id' => $this->getUserId($request->assignee),
-            'name' => $request->name,
-            'description' => $request->description,
-            'priority' => $request->priority
-        ]);
+        $subtask = Subtask::create($request->validated());
 
         return new SubtaskResource($subtask);
     }
@@ -102,13 +93,6 @@ class SubtasksController extends Controller
         }
 
         return false;
-    }
-
-    private function getUserId($name)
-    {
-        $userId = User::where('name', $name)->first()->id;
-
-        return $userId;
     }
 
 }

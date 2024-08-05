@@ -36,7 +36,7 @@ class ProjectController extends Controller implements HasMiddleware
      */
     public function store(StoreProjectRequest $request)
     {
-        $project = Project::create($request->validated() + ['user_id' => Auth::id()]);
+        $project = Project::create($request->validated());
 
         return new ProjectResource($project);
     }

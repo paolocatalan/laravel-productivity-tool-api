@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class StoreSubtaskRequest extends FormRequest
@@ -16,6 +18,13 @@ class StoreSubtaskRequest extends FormRequest
         return true;
     }
 
+    // look into passedValidation with merge method
+    protected function prepareForValidation(): void
+    {
+        $userId = (request()->isMethod('post')) ? $this->getUserId($this->assignee) : $this->task->user->id;
+        $this->merge(['task_id' => $this->task->id, 'user_id' => $userId]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,6 +33,8 @@ class StoreSubtaskRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'task_id' => ['required'],
+            'user_id' => ['required'],
             'assignee' => [
                 $this->isPostRequest(),
                 Rule::exists('users', 'name')->where('role', 'User'),
@@ -39,6 +50,13 @@ class StoreSubtaskRequest extends FormRequest
         return [
             'assignee' => 'Please ensure the name matches a current team member.'
         ];
+    }
+
+    private function getUserId($name): int
+    {
+        $id = User::where('name', $name)->first()->id;
+
+        return $id;
     }
 
     private function isPostRequest()

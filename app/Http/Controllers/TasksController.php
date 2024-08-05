@@ -29,17 +29,7 @@ class TasksController extends Controller
      */
     public function store(StoreTaskRequest $request, Task $task)
     {
-        Gate::authorize('manageTask', $task);
-
-        $task = Task::create([
-            'user_id' => Auth::id(),
-            'project_id' => $this->getProjectId($request->project),
-            'name' => $request->name,
-            'description' => $request->description,
-            'due_date' => $request->due_date,
-            'priority' => $request->priority,
-            'stage' => $request->stage
-        ]);
+        $task = Task::create($request->validated());
 
         return new TaskResource($task);
     }
@@ -57,8 +47,6 @@ class TasksController extends Controller
      */
     public function update(StoreTaskRequest $request, Task $task)
     {
-        Gate::authorize('manageTask', $task);
-
         $task->update($request->validated());
 
         return new TaskResource($task);
@@ -74,12 +62,5 @@ class TasksController extends Controller
         $task->delete();
 
         return $this->success('', 'Task has been deleted from the database.', 200);
-    }
-
-    private function getProjectId($title): int
-    {
-        $projectId = Project::where('title', $title)->first()->id;
-        
-        return $projectId;
     }
 }

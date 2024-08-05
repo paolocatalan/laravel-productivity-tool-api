@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\v1\StoreProjectRequest;
 use App\Http\Resources\v1\ProjectResource;
 use App\Models\v1\Project;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('auth', except: ['index', 'show']),
+            new Middleware('auth:sanctum', except: ['index', 'show']),
             new Middleware('last_active_at', only: ['create', 'store'])
         ];
     }
@@ -32,9 +34,9 @@ class ProjectController extends Controller implements HasMiddleware
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProjectRequest $request)
     {
-        $project = Project::create($request->validated());
+        $project = Project::create($request->validated() + ['user_id' => Auth::id()]);
 
         return new ProjectResource($project);
     }
@@ -50,7 +52,7 @@ class ProjectController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(StoreProjectRequest $request, Project $project)
     {
         $project->update($request->validated());
 

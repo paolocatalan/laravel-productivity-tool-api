@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\v1\ProjectController;
-use App\Http\Controllers\v1\TasksController;
-use App\Http\Controllers\v1\SubtasksController;
+use App\Http\Controllers\TasksController;
+use App\Http\Controllers\SubtasksController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 

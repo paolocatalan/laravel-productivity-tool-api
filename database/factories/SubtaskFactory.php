@@ -20,7 +20,7 @@ class SubtaskFactory extends Factory
     {
         return [
             'task_id' => Task::all()->random()->id,
-            'user_id' => User::all()->random()->id,
+            'user_id' => User::where('role', 'User')->inRandomOrder()->first()->id,
             'name' => $this->faker->unique()->sentence(),
             'description' => $this->faker->text(),
             'priority' => $this->faker->randomElement(['low', 'normal', 'high'])

@@ -15,12 +15,7 @@ class TaskSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->state(['role' => 'Manager'])->has(
-            Task::factory()->count(8)
-        )->create();
-
-        User::factory()->count(3)->state(['role' => 'User'])->has(
-            Subtask::factory()->count(10)
-        )->create();
+        Task::factory()->count(8)->create();
+        Subtask::factory()->count(10)->create();
     }
 }

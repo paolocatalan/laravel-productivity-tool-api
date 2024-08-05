@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\User;
+use App\Models\v1\Project;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,10 +24,15 @@ class DatabaseSeeder extends Seeder
             'role' => 'Administrator'
         ]);
 
+        User::factory()->count(2)->state(['role' => 'Manager'])->create();
+        User::factory()->count(5)->state(['role' => 'User'])->create();
+        
         $this->call([
             RoleSeeder::class,
+            ProjectSeeder::class,
             TaskSeeder::class
         ]);
+
 
     }
 }

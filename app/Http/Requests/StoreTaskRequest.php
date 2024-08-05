@@ -25,6 +25,10 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'project' => [
+                $this->isPostRequest(),
+                Rule::exists('project', 'title'),
+            ],
             'name' => [$this->isPostRequest(), 'max:255'],
             'description' => [$this->isPostRequest()],
             'due_date' =>  [$this->isPostRequest(), 'date', 'date_format:Y-m-d H:s:i', 'after:now'],

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
+use App\Models\v1\Project;
 use App\Traits\HttpResponses;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,7 @@ class TasksController extends Controller
 
         $task = Task::create([
             'user_id' => Auth::id(),
+            'project_id' => $this->getProjectId($request->project),
             'name' => $request->name,
             'description' => $request->description,
             'due_date' => $request->due_date,
@@ -72,5 +74,12 @@ class TasksController extends Controller
         $task->delete();
 
         return $this->success('', 'Task has been deleted from the database.', 200);
+    }
+
+    private function getProjectId($title): int
+    {
+        $projectId = Project::where('title', $title)->first()->id;
+        
+        return $projectId;
     }
 }

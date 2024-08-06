@@ -67,14 +67,14 @@ class SubtaskTest extends TestCase
 
     public function test_subtask_update(): void
     {
-        $this->seed();
-        $user = User::factory()->state(['id' => 99, 'role' => 'User'])->create();
-        $task = Task::factory()->has(Subtask::factory()->state(['id' => 99, 'user_id' => 99]))->create();
+        $user = User::factory()->state(['id' => 1, 'role' => 'User'])->create();
+        
+        $task = Task::factory()->has(Subtask::factory()->state(['id' => 1, 'user_id' => 1]))->create();
 
-        $response = $this->actingAs($user)->patchJson('/api/tasks/' . $task->id . '/subtasks/99', [
-            'priority' => 'low'
+        $response = $this->actingAs($user)->patchJson('/api/v1/tasks/' . $task->id . '/subtasks/1', [
+            'priority' => 'Low'
         ]);
-
+        // $response->dd();
         $response->assertStatus(200);
     }
 

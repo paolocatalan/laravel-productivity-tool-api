@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'store']);
 
-Route::middleware(['auth:sanctum', 'last_active_at'])->group(function () {
+Route::middleware(['auth:sanctum', 'lastActiveAt'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });

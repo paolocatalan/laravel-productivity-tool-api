@@ -22,15 +22,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('approve-user', function (User $user) {
+        Gate::before(function (User $user) {
             if ($user->role === Role::ROLE_ADMIN) {
                 return true;
             }
             return null;
         });
 
-        Gate::before(function (User $user) {
-            if ($user->role === Role::ROLE_ADMIN) {
+        Gate::define('approve-user', function (User $user) {
+            if ($user->role === Role::ROLE_MANAGER) {
                 return true;
             }
             return null;

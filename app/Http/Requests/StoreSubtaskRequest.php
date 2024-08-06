@@ -16,9 +16,12 @@ class StoreSubtaskRequest extends FormRequest
      */
     public function authorize()
     {
-        $subtaskPolicy = (request()->isMethod('post')) ? 'createSubtask' : 'updateSubask';
+        if (request()->isMethod('post')) {
+            return Gate::allows('createSubtask', Subtask::class);
+        } else {
+            return Gate::allows('updateSubtask', $this->subtask);
+        }
 
-        return Gate::allows($subtaskPolicy, Subtask::class);
     }
 
     /**

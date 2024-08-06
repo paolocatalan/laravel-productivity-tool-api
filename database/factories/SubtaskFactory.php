@@ -19,8 +19,8 @@ class SubtaskFactory extends Factory
     public function definition(): array
     {
         return [
-            'task_id' => Task::all()->random()->id,
-            'user_id' => User::where('role', 'User')->inRandomOrder()->first()->id,
+            'task_id' => Task::factory(), // Task::all()->random()->id,
+            'user_id' => Task::factory(), // User::where('role', 'User')->inRandomOrder()->first()->id,
             'name' => $this->faker->unique()->sentence(),
             'description' => $this->faker->text(),
             'priority' => $this->faker->randomElement(['low', 'normal', 'high'])

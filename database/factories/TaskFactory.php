@@ -21,8 +21,8 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::where('role', 'Manager')->inRandomOrder()->first()->id,
-            'project_id' => Project::all()->random()->id,
+            'user_id' => User::factory(), // User::where('role', 'Manager')->inRandomOrder()->first()->id
+            'project_id' => User::factory(), // Project::all()->random()->id
             'name' => $this->faker->unique()->sentence(),
             'description' => $this->faker->text(),
             'due_date' => $this->faker->dateTimeBetween('+1 days', '+30 days'),

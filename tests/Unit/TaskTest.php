@@ -4,10 +4,9 @@ namespace Tests\Unit;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Models\v1\Project;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Exceptions;
-use Illuminate\Auth\Access\AuthorizationException;
 
 class TaskTest extends TestCase
 {
@@ -19,16 +18,18 @@ class TaskTest extends TestCase
     public function test_task_index(): void
     {
         $user = User::factory()->state(['role' => 'Manager'])->create(); 
+        Project::factory()->state(['title' => 'Digital Marketing'])->create();
 
-        $this->actingAs($user)->postJson('/api/tasks', [
+        $this->actingAs($user)->postJson('/api/v1/tasks', [
+            'project' => 'Digital Marketing',
             'name' => 'Automated Testing',
             'description' => 'Test the API at every level and to make sure it is prepared to be used by its end customers.',
             'due_date' => '2024-08-11 11:00:11',
-            'priority' => 'medium',
+            'priority' => 'Normal',
             'stage' => 'Not started'
         ]);
 
-        $response = $this->get('/api/tasks');
+        $response = $this->get('/api/v1/tasks');
 
         $this->assertJson($response->getContent());
 
@@ -42,13 +43,15 @@ class TaskTest extends TestCase
     public function test_task_store(): void
     {
         $user = User::factory()->state(['role' => 'Manager'])->create();
+        Project::factory()->state(['title' => 'Digital Marketing'])->create();
 
-        $this->actingAs($user)->postJson('/api/tasks',
+        $this->actingAs($user)->postJson('/api/v1/tasks',
             [
+                'project' => 'Digital Marketing',
                 'name' => 'Automated Testing',
                 'description' => 'Test the API at every level and to make sure it is prepared to be used by its end customers.',
                 'due_date' => '2024-08-11 11:00:11',
-                'priority' => 'medium',
+                'priority' => 'High',
                 'stage' => 'Not started'
             ]
         );
@@ -60,21 +63,14 @@ class TaskTest extends TestCase
 
     public function test_authorization_on_updating_tasks(): void
     {
-        // Exceptions::fake();
+        $user = User::factory()->state(['role' => 'User'])->create();
+        $task = Task::factory()->for(User::factory())->create();
 
-        $user = User::factory()->state(['id' => 1])->create();
-        $task = Task::factory()->for(User::factory()->state(['id' => 2]))->create();
-
-        $response = $this->actingAs($user)->patchJson('/api/tasks/' . $task->id, [
-            'priority' => 'low'
+        $response = $this->actingAs($user)->patchJson('/api/v1/tasks/' . $task->id, [
+            'priority' => 'Low'
         ]);
 
         $response->assertStatus(403);
-
-        // Exceptions::assertReported(AuthorizationException::class);
-        // Exceptions::assertReported(function (AuthorizationException $e) {
-        //     return $e->getMessage() === 'You are not authorized to make this request.';
-        // });
     }
 
     public function test_authorization_on_deleting_tasks(): void
@@ -82,7 +78,7 @@ class TaskTest extends TestCase
         $user = User::factory()->state(['role' => 'Manager'])->create();
         $task = Task::factory()->for($user)->create();
 
-        $response = $this->actingAs($user)->delete('/api/tasks/' . $task->id);
+        $response = $this->actingAs($user)->delete('/api/v1/tasks/' . $task->id);
 
         $response->assertStatus(200);
         $response->assertSee([

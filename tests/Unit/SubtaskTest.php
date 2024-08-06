@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Models\Subtask;
 use App\Models\Task;
 use App\Models\User;
-use App\Models\v1\Project;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -17,12 +16,11 @@ class SubtaskTest extends TestCase
     /**
      * A basic unit test example.
      */
-    public function test_subtask_index(): void
+    public function test_subtask_index_json_structure(): void
     {
-        $this->seed();
         $user = User::factory()->state(['role' => 'User'])->create();
-
-        $response = $this->actingAs($user)->getJson('/api/tasks/1/subtasks');
+        $task = Task::factory()->has(Subtask::factory()->for($user))->create();
+        $response = $this->actingAs($user)->getJson('/api/v1/tasks/' . $task->id .' /subtasks');
 
         $response
             ->assertJsonStructure([
@@ -46,12 +44,12 @@ class SubtaskTest extends TestCase
             ]);
     }
 
-    public function test_subtask_store(): void
+    public function test_subtask_store_authorization(): void
     {
-        $this->seed();
-        $user = User::factory()->state(['name' => 'Jim Keller', 'role' => 'User'])->create();
+        $user = User::factory()->state(['name' => 'John Carmack', 'role' => 'User'])->create();
+        $task = Task::factory()->has(Subtask::factory()->for(User::factory()->state(['name' => 'Jim Keller'])))->create();
 
-        $response = $this->actingAs($user)->postJson('/api/tasks/1/subtasks', [
+        $response = $this->actingAs($user)->postJson('/api/v1/tasks/' . $task->id . '/subtasks', [
             'assignee' => 'Jim Keller',
             'name' => 'Automated Testing',
             'description' => 'Test the API at every level and to make sure it is prepared to be used by its end customers.',
@@ -65,23 +63,38 @@ class SubtaskTest extends TestCase
         );
     }
 
-    public function test_subtask_update(): void
+    public function test_subtask_store_assignee_validation(): void
+    {
+        $user = User::factory()->state(['name' => 'John Carmack', 'role' => 'Manager'])->create();
+        $task = Task::factory()->create();
+
+        $response = $this->actingAs($user)->postJson('/api/v1/tasks/' . $task->id . '/subtasks', [
+            'assignee' => 'Jim Keller',
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(fn (AssertableJson $json) =>
+            $json->hasAll(['message', 'errors'])
+        );
+    }
+
+    public function test_subtask_updating_successfully(): void
     {
         $user = User::factory()->state(['id' => 1, 'role' => 'User'])->create();
-        
         $task = Task::factory()->has(Subtask::factory()->state(['id' => 1, 'user_id' => 1]))->create();
 
         $response = $this->actingAs($user)->patchJson('/api/v1/tasks/' . $task->id . '/subtasks/1', [
             'priority' => 'Low'
         ]);
-        // $response->dd();
+
         $response->assertStatus(200);
     }
 
-    public function test_authorization_on_deleting_subtasks(): void
+    public function test_subtasks_destroy_authorization(): void
     {
         $user = User::factory()->state(['id' => 1, 'role' => 'User'])->create(); 
-        $task = Task::factory()->for(User::factory()->state(['id' => 2]))->has(Subtask::factory()->state(['id' => 1]))->create();
+        $task = Task::factory()->has(Subtask::factory()->state(['id' => 1, 'user_id' => 1]))->create();
 
         $response = $this->actingAs($user)->delete('/api/tasks/' . $task->id . '/subtasks/1');
 

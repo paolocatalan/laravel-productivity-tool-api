@@ -19,7 +19,8 @@ class ProjectController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:sanctum', except: ['index', 'show']),
-            new Middleware('last_active_at', only: ['create', 'store'])
+            new Middleware('lastActiveAt', only: ['create', 'store']),
+            new Middleware('approved', only: ['create', 'store'])
         ];
     }
 

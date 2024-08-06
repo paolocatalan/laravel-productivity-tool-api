@@ -48,6 +48,6 @@ class AuthController extends Controller
 
         return $this->success([
             'message' => 'You have been successfully logged out and your token has been deleted.'
-        ]);
+        ], 200);
     }
 }
